@@ -1,0 +1,1012 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bibabo Exam Prep Demo</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Serif:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; }
+  .scroll-area { scroll-behavior: smooth; }
+  .scroll-area::-webkit-scrollbar { display: none; }
+  @keyframes spin360 { to { transform: rotate(360deg); } }
+  @keyframes sheetUp { from { transform: translateY(100%); } to { transform: none; } }
+  @keyframes scrimIn { from { opacity: 0; } to { opacity: 1; } }
+</style>
+</helmet>
+
+<x-import component="IOSDevice" from="./ios-frame.jsx" hint-size="402px,874px">
+<div style="height:100%;position:relative;overflow:hidden;background:#faf9f6;font-family:'IBM Plex Sans',system-ui,sans-serif;color:#1b1d1a;-webkit-font-smoothing:antialiased;">
+
+  <div class="scroll-area" ref="{{ setScrollRef }}" style="height:100%;overflow-y:auto;overflow-x:hidden;">
+
+    <!-- ════════ SCREEN 1 · UPLOAD ════════ -->
+    <sc-if value="{{ isUpload }}" hint-placeholder-val="{{ true }}">
+    <div style="padding:58px 20px 120px;">
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#8c8f85;">New study set</div>
+      <div style="font-size:28px;font-weight:700;line-height:1.15;margin:8px 0 6px;letter-spacing:-.01em;">Add your study material</div>
+      <div style="font-size:14.5px;line-height:1.5;color:#595c53;max-width:300px;">Drop in a file or paste your text — everything you practice is built from it.</div>
+
+      <!-- Entry 1 · drag & drop / tap -->
+      <button onClick="{{ pickFile }}" style="margin-top:24px;width:100%;border:1.5px dashed #cdcabf;border-radius:18px;background:#fff;padding:34px 18px;display:flex;flex-direction:column;align-items:center;gap:11px;text-align:center;cursor:pointer;font:inherit;transition:all .15s;">
+        <div style="width:50px;height:50px;border-radius:14px;background:#eaf1ec;display:flex;align-items:center;justify-content:center;">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 16V4m0 0L7 9m5-5l5 5" stroke="#2f6b4f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M5 18v1a2 2 0 002 2h10a2 2 0 002-2v-1" stroke="#2f6b4f" stroke-width="2" stroke-linecap="round"/></svg>
+        </div>
+        <div style="font-size:15.5px;font-weight:600;">Drag &amp; drop or tap to upload</div>
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#a0a298;">PDF · DOCX · TXT — up to 50 MB</div>
+      </button>
+
+      <!-- divider -->
+      <div style="display:flex;align-items:center;gap:12px;margin:16px 2px;">
+        <div style="flex:1;height:1px;background:#e6e4db;"></div>
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#b3b1a7;">or</div>
+        <div style="flex:1;height:1px;background:#e6e4db;"></div>
+      </div>
+
+      <!-- Entry 2 · paste text -->
+      <sc-if value="{{ showPasteButton }}" hint-placeholder-val="{{ true }}">
+        <button onClick="{{ openPaste }}" style="width:100%;background:#fff;border:1px solid #e9e7df;border-radius:16px;padding:16px;cursor:pointer;font:inherit;display:flex;align-items:center;gap:13px;text-align:left;">
+          <div style="width:40px;height:40px;border-radius:11px;background:#f1efe8;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M5 6h14M5 11h14M5 16h9" stroke="#595c53" stroke-width="1.8" stroke-linecap="round"/></svg></div>
+          <div style="flex:1;"><div style="font-size:15px;font-weight:600;">Paste text instead</div><div style="font-size:12px;color:#8c8f85;margin-top:1px;">Drop in any passage or notes</div></div>
+          <svg width="8" height="13" viewBox="0 0 8 14"><path d="M1 1l6 6-6 6" stroke="#c3c1b8" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+      </sc-if>
+
+      <sc-if value="{{ isPasting }}" hint-placeholder-val="{{ false }}">
+        <div style="background:#fff;border:1.5px solid #2f6b4f;border-radius:16px;padding:14px;">
+          <textarea value="{{ pasteText }}" onChange="{{ onPasteChange }}" placeholder="Paste your study text here…" style="width:100%;min-height:140px;border:none;outline:none;resize:none;font:inherit;font-size:14.5px;line-height:1.55;color:#1b1d1a;background:none;"></textarea>
+          <div style="display:flex;align-items:center;gap:10px;margin-top:8px;padding-top:10px;border-top:1px solid #f0eee7;">
+            <div style="flex:1;font-family:'IBM Plex Mono',monospace;font-size:11px;color:#a0a298;">{{ pasteCount }}</div>
+            <button onClick="{{ cancelPaste }}" style="background:none;border:none;font:inherit;font-size:14px;font-weight:500;color:#8c8f85;cursor:pointer;padding:6px 10px;">Cancel</button>
+            <button onClick="{{ confirmPaste }}" style="{{ confirmPasteStyle }}">Add text</button>
+          </div>
+        </div>
+      </sc-if>
+
+      <!-- uploaded material · tap to preview -->
+      <sc-if value="{{ hasSource }}" hint-placeholder-val="{{ false }}">
+        <button onClick="{{ openPreview }}" style="margin-top:14px;width:100%;text-align:left;background:#fff;border:1px solid #e9e7df;border-radius:14px;padding:14px;display:flex;align-items:center;gap:12px;cursor:pointer;font:inherit;">
+          <div style="width:38px;height:46px;border-radius:6px;background:#eaf1ec;border:1px solid #cfe0d4;flex-shrink:0;display:flex;align-items:flex-end;padding:5px;">
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:8px;color:#2f6b4f;font-weight:500;">{{ sourceExt }}</div>
+          </div>
+          <div style="flex:1;min-width:0;">
+            <div style="font-size:14px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ sourceName }}</div>
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#8c8f85;margin-top:2px;display:flex;align-items:center;gap:5px;"><span>{{ sourceMeta }}</span><span style="color:#cfcdc3;">·</span><span style="color:#2f6b4f;">Preview</span></div>
+          </div>
+          <button onClick="{{ removeSource }}" style="border:none;background:none;cursor:pointer;padding:6px;color:#a0a298;flex-shrink:0;">
+            <svg width="16" height="16" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          </button>
+        </button>
+      </sc-if>
+
+      <button onClick="{{ analyze }}" style="{{ analyzeStyle }}">
+        <span>Analyze &amp; generate</span>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M5 12h14m-6-6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+    </div>
+    </sc-if>
+
+    <!-- ════════ SCREEN 2 · PARSING ════════ -->
+    <sc-if value="{{ isParsing }}" hint-placeholder-val="{{ false }}">
+    <div style="padding:108px 24px 60px;display:flex;flex-direction:column;height:100%;">
+      <div style="display:flex;align-items:center;gap:14px;margin-bottom:8px;">
+        <div style="width:46px;height:46px;border-radius:50%;border:3px solid #e9e7df;border-top-color:#2f6b4f;animation:spin360 .9s linear infinite;"></div>
+        <div>
+          <div style="font-size:20px;font-weight:700;letter-spacing:-.01em;">Building your set</div>
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#8c8f85;">{{ sourceName }}</div>
+        </div>
+      </div>
+
+      <!-- progress bar -->
+      <div style="margin-top:24px;">
+        <div style="height:6px;border-radius:99px;background:#e9e7df;overflow:hidden;"><div style="height:100%;border-radius:99px;background:#2f6b4f;transition:width .6s ease;width: {{ parsePct }}%;"></div></div>
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#a0a298;margin-top:7px;">{{ parsePct }}%</div>
+      </div>
+
+      <div style="margin-top:18px;display:flex;flex-direction:column;gap:2px;">
+        <sc-for list="{{ parseRows }}" as="step" hint-placeholder-count="5">
+          <div style="display:flex;align-items:center;gap:14px;padding:13px 4px;">
+            <div style="{{ step.iconWrap }}">
+              <sc-if value="{{ step.isDone }}" hint-placeholder-val="{{ false }}">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </sc-if>
+              <sc-if value="{{ step.isActive }}" hint-placeholder-val="{{ false }}">
+                <div style="width:14px;height:14px;border-radius:50%;border:2px solid #cfe0d4;border-top-color:#2f6b4f;animation:spin360 .8s linear infinite;"></div>
+              </sc-if>
+            </div>
+            <div style="{{ step.labelStyle }}">{{ step.label }}</div>
+          </div>
+        </sc-for>
+      </div>
+
+      <div style="margin-top:auto;padding-top:30px;font-size:13px;color:#a0a298;line-height:1.5;border-top:1px solid #e9e7df;">We're splitting your material into topics and writing questions for each one.</div>
+    </div>
+    </sc-if>
+
+    <!-- ════════ SCREEN 3 · STUDY HUB ════════ -->
+    <sc-if value="{{ isOverview }}" hint-placeholder-val="{{ false }}">
+    <div style="padding:58px 20px 130px;">
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#2f6b4f;">Ready to practice</div>
+      <div style="font-size:25px;font-weight:700;line-height:1.18;margin:8px 0 0;letter-spacing:-.01em;">{{ docName }}</div>
+
+      <div style="margin-top:18px;background:#fff;border:1px solid #e9e7df;border-radius:16px;overflow:hidden;">
+        <div style="padding:15px 16px;display:flex;align-items:center;gap:12px;border-bottom:1px solid #f0eee7;">
+          <div style="width:34px;height:34px;border-radius:9px;background:#eaf1ec;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><div style="width:14px;height:14px;border-radius:4px;background:#2f6b4f;"></div></div>
+          <div style="flex:1;"><div style="font-size:11px;color:#8c8f85;font-family:'IBM Plex Mono',monospace;">EXAM DIRECTION</div><div style="font-size:14.5px;font-weight:600;margin-top:1px;">{{ examDirection }}</div></div>
+        </div>
+        <button onClick="{{ openLang }}" style="width:100%;text-align:left;background:none;border:none;cursor:pointer;font:inherit;padding:15px 16px;display:flex;align-items:center;gap:12px;">
+          <div style="width:34px;height:34px;border-radius:9px;background:#f6eedd;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><div style="font-family:'IBM Plex Mono',monospace;font-size:13px;color:#9a6b1f;font-weight:500;">文</div></div>
+          <div style="flex:1;"><div style="font-size:11px;color:#8c8f85;font-family:'IBM Plex Mono',monospace;">CONTENT LANGUAGE</div><div style="font-size:14.5px;font-weight:600;margin-top:1px;">{{ lang }}</div></div>
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#2f6b4f;">Change</div>
+          <svg width="7" height="12" viewBox="0 0 8 14" style="margin-left:2px;"><path d="M1 1l6 6-6 6" stroke="#c3c1b8" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+      </div>
+
+      <!-- TOPICS · coverage split into knowledge areas with mastery -->
+      <div style="margin-top:22px;display:flex;align-items:baseline;justify-content:space-between;">
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:#8c8f85;padding-left:2px;">Coverage · {{ blockCount }} topics</div>
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#b3b1a7;">tap to practice</div>
+      </div>
+      <div style="margin-top:10px;display:flex;flex-direction:column;gap:10px;">
+        <sc-for list="{{ topicBlocks }}" as="b" hint-placeholder-count="3">
+          <button onClick="{{ b.onClick }}" style="text-align:left;background:#fff;border:1px solid #e9e7df;border-radius:16px;padding:15px 16px;cursor:pointer;font:inherit;display:block;width:100%;">
+            <div style="display:flex;align-items:center;gap:10px;">
+              <div style="font-size:15.5px;font-weight:700;flex:1;letter-spacing:-.01em;">{{ b.name }}</div>
+              <div style="{{ b.pillStyle }}">{{ b.pillLabel }}</div>
+              <svg width="7" height="12" viewBox="0 0 8 14"><path d="M1 1l6 6-6 6" stroke="#c3c1b8" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div style="font-size:12.5px;color:#8c8f85;line-height:1.4;margin-top:3px;">{{ b.desc }}</div>
+            <div style="height:6px;border-radius:99px;background:#ece9e0;margin-top:11px;overflow:hidden;"><div style="height:100%;border-radius:99px;background:{{ b.barColor }};width: {{ b.barPct }}%;"></div></div>
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:#a0a298;margin-top:8px;">{{ b.count }} questions</div>
+          </button>
+        </sc-for>
+      </div>
+
+      <!-- Mistakes entry -->
+      <button onClick="{{ openMistakes }}" style="margin-top:12px;width:100%;text-align:left;background:#fff;border:1px solid #e9e7df;border-radius:16px;padding:15px 16px;cursor:pointer;font:inherit;display:flex;align-items:center;gap:13px;">
+        <div style="width:38px;height:38px;border-radius:11px;background:#f7e9e4;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="19" height="19" viewBox="0 0 24 24" fill="none"><path d="M6 4h12v16l-6-3.5L6 20V4z" stroke="#b0452f" stroke-width="1.8" stroke-linejoin="round"/></svg></div>
+        <div style="flex:1;"><div style="font-size:15px;font-weight:700;">Mistakes</div><div style="font-size:12px;color:#8c8f85;margin-top:1px;">Re-drill only the questions you missed</div></div>
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#b0452f;background:#f7e9e4;padding:3px 8px;border-radius:6px;">{{ mistakeCount }}</div>
+        <svg width="7" height="12" viewBox="0 0 8 14"><path d="M1 1l6 6-6 6" stroke="#c3c1b8" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+    </div>
+    </sc-if>
+
+    <!-- ════════ SCREEN 4 · QUIZ + EXPLANATION ════════ -->
+    <sc-if value="{{ isQuiz }}" hint-placeholder-val="{{ false }}">
+    <div style="padding:54px 0 130px;">
+      <!-- progress header -->
+      <div style="padding:0 20px;">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <button onClick="{{ goHub }}" style="border:none;background:#fff;border:1px solid #e9e7df;border-radius:50%;width:30px;height:30px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="8" height="14" viewBox="0 0 10 16"><path d="M9 1L2 8l7 7" stroke="#43463f" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+          <div style="flex:1;font-family:'IBM Plex Mono',monospace;font-size:12px;color:#595c53;">{{ blockName }} · {{ qNumber }}<span style="color:#b8b6ac;">/{{ qTotal }}</span></div>
+          <div style="{{ difficultyStyle }}">{{ difficulty }}</div>
+        </div>
+        <div style="height:4px;border-radius:99px;background:#e9e7df;margin-top:10px;overflow:hidden;"><div style="height:100%;border-radius:99px;background:#2f6b4f;transition:width .4s ease;width: {{ progressPct }}%;"></div></div>
+      </div>
+
+      <!-- targeted-drill context -->
+      <sc-if value="{{ isDrill }}" hint-placeholder-val="{{ false }}">
+        <div style="margin:14px 20px 0;background:#f6eedd;border:1px solid #ecdfc2;border-radius:12px;padding:11px 13px;display:flex;gap:10px;align-items:flex-start;">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" style="flex-shrink:0;margin-top:1px;"><path d="M4 12a8 8 0 108-8 8 8 0 00-6 2.7M4 4v3.5h3.5" stroke="#9a6b1f" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <div style="font-size:12.5px;line-height:1.5;color:#7d5a1c;"><b style="color:#5f4514;">Targeted drill · {{ drillKp }}.</b> Fresh questions on the same concept — reworded, not the ones you saw before.</div>
+        </div>
+      </sc-if>
+
+      <!-- question card -->
+      <div style="margin:16px 20px 0;background:#fff;border:1px solid #e9e7df;border-radius:18px;padding:18px;">
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:12px;">
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:#2f6b4f;background:#eaf1ec;padding:3px 8px;border-radius:6px;letter-spacing:.04em;">{{ chapter }}</span>
+          <span style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:#8c8f85;">{{ typeLabel }}</span>
+        </div>
+        <div style="font-size:17px;line-height:1.45;font-weight:500;letter-spacing:-.005em;">{{ stem }}</div>
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#a0a298;margin-top:8px;">{{ kp }}</div>
+
+        <div style="display:flex;flex-direction:column;gap:10px;margin-top:16px;">
+          <sc-for list="{{ options }}" as="opt" hint-placeholder-count="4">
+            <button onClick="{{ opt.onClick }}" style="{{ opt.cardStyle }}">
+              <div style="{{ opt.badgeStyle }}">{{ opt.badge }}</div>
+              <div style="flex:1;font-size:14.5px;line-height:1.4;">{{ opt.text }}</div>
+              <sc-if value="{{ opt.isCheck }}" hint-placeholder-val="{{ false }}">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" style="flex-shrink:0;"><circle cx="12" cy="12" r="11" fill="#2f6b4f"/><path d="M7 12.5l3.2 3.2L17 9" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </sc-if>
+              <sc-if value="{{ opt.isCross }}" hint-placeholder-val="{{ false }}">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" style="flex-shrink:0;"><circle cx="12" cy="12" r="11" fill="#b0452f"/><path d="M8.5 8.5l7 7M15.5 8.5l-7 7" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/></svg>
+              </sc-if>
+            </button>
+          </sc-for>
+        </div>
+      </div>
+
+      <!-- submit / explanation -->
+      <sc-if value="{{ submitted }}" hint-placeholder-val="{{ false }}">
+        <div style="margin:14px 20px 0;">
+          <!-- result banner -->
+          <div style="{{ explain.bannerStyle }}">
+            <div style="{{ explain.bannerIconStyle }}">
+              <sc-if value="{{ explain.isCorrect }}" hint-placeholder-val="{{ false }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></sc-if>
+              <sc-if value="{{ explain.isWrong }}" hint-placeholder-val="{{ false }}"><svg width="14" height="14" viewBox="0 0 24 24"><path d="M7 7l10 10M17 7L7 17" stroke="#fff" stroke-width="2.6" stroke-linecap="round"/></svg></sc-if>
+            </div>
+            <div style="font-size:15px;font-weight:700;">{{ explain.resultLabel }}</div>
+          </div>
+
+          <!-- why correct -->
+          <div style="margin-top:14px;background:#fff;border:1px solid #e9e7df;border-radius:16px;padding:16px;">
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:#2f6b4f;margin-bottom:8px;">Why the answer is correct</div>
+            <div style="font-size:14.5px;line-height:1.55;color:#33352f;">{{ explain.whyCorrect }}<sc-if value="{{ explain.primaryCite.show }}" hint-placeholder-val="{{ true }}"><button onClick="{{ explain.primaryCite.onClick }}" style="display:inline-flex;align-items:center;gap:3px;vertical-align:super;margin-left:3px;background:#eaf1ec;border:1px solid #cfe0d4;color:#2f6b4f;border-radius:6px;padding:1px 6px 1px 4px;font-family:'IBM Plex Mono',monospace;font-size:9.5px;cursor:pointer;line-height:1.4;"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" style="margin-top:-1px;"><path d="M7 8h10M7 12h10M7 16h6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>{{ explain.primaryCite.label }}</button></sc-if></div>
+          </div>
+
+          <!-- why wrong -->
+          <sc-if value="{{ explain.showReasons }}" hint-placeholder-val="{{ false }}">
+          <div style="margin-top:10px;background:#fff;border:1px solid #e9e7df;border-radius:16px;padding:16px;">
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:#b0452f;margin-bottom:10px;">Where it went wrong</div>
+            <div style="display:flex;flex-direction:column;gap:11px;">
+              <sc-for list="{{ explain.reasons }}" as="r" hint-placeholder-count="1">
+                <div style="display:flex;gap:10px;">
+                  <div style="width:22px;height:22px;border-radius:6px;background:#f7e9e4;color:#b0452f;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">{{ r.badge }}</div>
+                  <div style="font-size:13.5px;line-height:1.5;color:#5c5e56;">{{ r.msg }}</div>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+          </sc-if>
+
+          <!-- sources -->
+          <div style="margin-top:10px;">
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:#8c8f85;margin:0 2px 8px;">Source trace · tap to open</div>
+            <div style="display:flex;flex-direction:column;gap:8px;">
+              <sc-for list="{{ explain.sources }}" as="s" hint-placeholder-count="1">
+                <button onClick="{{ s.onClick }}" style="width:100%;text-align:left;background:#fff;border:1px solid #e9e7df;border-radius:12px;padding:12px 14px;cursor:pointer;font:inherit;display:flex;align-items:center;gap:11px;">
+                  <div style="{{ s.iconStyle }}">
+                    <sc-if value="{{ s.fallback }}" hint-placeholder-val="{{ false }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 8v5m0 3h.01" stroke="#9a6b1f" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="12" r="9" stroke="#9a6b1f" stroke-width="1.8"/></svg></sc-if>
+                    <sc-if value="{{ s.hasPassage }}" hint-placeholder-val="{{ true }}"><svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M7 8h10M7 12h10M7 16h6" stroke="#2f6b4f" stroke-width="2" stroke-linecap="round"/></svg></sc-if>
+                  </div>
+                  <div style="flex:1;min-width:0;">
+                    <div style="font-size:13.5px;font-weight:600;">{{ s.label }}</div>
+                    <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#8c8f85;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ s.locator }}</div>
+                  </div>
+                  <svg width="7" height="12" viewBox="0 0 8 14"><path d="M1 1l6 6-6 6" stroke="#c3c1b8" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </button>
+              </sc-for>
+            </div>
+          </div>
+
+          <!-- review topics -->
+          <div style="margin-top:14px;background:#f6eedd;border:1px solid #ecdfc2;border-radius:14px;padding:14px;">
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:#9a6b1f;margin-bottom:9px;">Review next</div>
+            <div style="display:flex;flex-wrap:wrap;gap:7px;">
+              <sc-for list="{{ explain.reviewTopics }}" as="t" hint-placeholder-count="2">
+                <div style="background:#fff;border:1px solid #ecdfc2;border-radius:8px;padding:5px 10px;font-size:12.5px;font-weight:500;color:#7d5a1c;">{{ t }}</div>
+              </sc-for>
+            </div>
+          </div>
+        </div>
+      </sc-if>
+
+      <!-- footer action -->
+      <div style="padding:16px 20px 0;">
+        <button onClick="{{ primaryAction }}" style="{{ primaryActionStyle }}">
+          <span>{{ primaryActionLabel }}</span>
+          <sc-if value="{{ showActionArrow }}" hint-placeholder-val="{{ true }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M5 12h14m-6-6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></sc-if>
+        </button>
+      </div>
+    </div>
+    </sc-if>
+
+    <!-- ════════ MISTAKES ════════ -->
+    <sc-if value="{{ isMistakes }}" hint-placeholder-val="{{ false }}">
+    <div style="padding:54px 20px 130px;">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <button onClick="{{ goHub }}" style="border:none;background:#fff;border:1px solid #e9e7df;border-radius:50%;width:34px;height:34px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="9" height="15" viewBox="0 0 10 16"><path d="M9 1L2 8l7 7" stroke="#43463f" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+        <div style="flex:1;"><div style="font-size:22px;font-weight:700;letter-spacing:-.01em;">Mistakes</div><div style="font-size:13px;color:#595c53;">{{ mistakeCount }} questions to re-drill</div></div>
+      </div>
+
+      <div style="margin-top:18px;display:flex;flex-direction:column;gap:10px;">
+        <sc-for list="{{ mistakeList }}" as="m" hint-placeholder-count="2">
+          <div style="background:#fff;border:1px solid #e9e7df;border-radius:16px;padding:16px;">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:9px;">
+              <span style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:#2f6b4f;background:#eaf1ec;padding:3px 8px;border-radius:6px;">{{ m.chapter }}</span>
+              <div style="flex:1;"></div>
+              <span style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:#b0452f;background:#f7e9e4;padding:3px 8px;border-radius:6px;">{{ m.tag }}</span>
+            </div>
+            <div style="font-size:15px;line-height:1.45;font-weight:500;">{{ m.stem }}</div>
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#a0a298;margin-top:7px;">{{ m.kp }}</div>
+            <button onClick="{{ m.onClick }}" style="margin-top:13px;width:100%;background:#1b1d1a;color:#fff;border:none;border-radius:11px;padding:12px;font:inherit;font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 12a8 8 0 108-8 8 8 0 00-6 2.7M4 4v3.5h3.5" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>Try again</button>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+    </sc-if>
+
+    <!-- ════════ SCREEN 5 · PROGRESS ════════ -->
+    <sc-if value="{{ isProgress }}" hint-placeholder-val="{{ false }}">
+    <div style="padding:58px 20px 170px;">
+      <div style="font-size:26px;font-weight:700;letter-spacing:-.01em;">Your progress</div>
+      <div style="font-size:14px;color:#595c53;margin-top:3px;">{{ examDirection }}</div>
+
+      <sc-if value="{{ hasDrillResult }}" hint-placeholder-val="{{ false }}">
+        <div style="margin-top:16px;background:#eaf1ec;border:1px solid #cfe0d4;border-radius:14px;padding:14px 15px;display:flex;gap:11px;align-items:flex-start;">
+          <div style="width:26px;height:26px;border-radius:50%;background:#2f6b4f;flex-shrink:0;display:flex;align-items:center;justify-content:center;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div style="flex:1;"><div style="font-size:14px;font-weight:700;color:#2a5640;">{{ drillResultView.name }} is improving</div><div style="font-size:13px;line-height:1.5;color:#3d5e4c;margin-top:2px;">Mastery moved <b>{{ drillResultView.from }}% → {{ drillResultView.to }}%</b> on this fresh set. Keep drilling your weak points below.</div></div>
+        </div>
+      </sc-if>
+
+      <div style="margin-top:20px;background:#fff;border:1px solid #e9e7df;border-radius:18px;padding:20px;display:flex;align-items:center;gap:20px;">
+        <div style="width:108px;height:108px;border-radius:50%;background:conic-gradient(#2f6b4f calc({{ masteryPct }}*1%), #ece9e0 0);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+          <div style="width:84px;height:84px;border-radius:50%;background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;">
+            <div style="font-size:28px;font-weight:700;line-height:1;">{{ masteryPct }}%</div>
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.1em;color:#8c8f85;margin-top:3px;">MASTERY</div>
+          </div>
+        </div>
+        <div style="flex:1;">
+          <div style="font-size:15px;font-weight:700;color:#9a6b1f;">{{ masteryLabel }}</div>
+          <div style="font-size:13px;line-height:1.5;color:#5c5e56;margin-top:4px;">{{ masterySummary }}</div>
+        </div>
+      </div>
+
+      <div style="margin-top:18px;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:#8c8f85;padding-left:2px;">Weak knowledge points</div>
+      <div style="margin-top:8px;display:flex;flex-direction:column;gap:10px;">
+        <sc-for list="{{ weakPoints }}" as="wp" hint-placeholder-count="3">
+          <button onClick="{{ wp.onClick }}" style="{{ wp.rowStyle }}">
+            <div style="display:flex;align-items:center;gap:8px;">
+              <div style="font-size:14px;font-weight:600;flex:1;text-align:left;">{{ wp.name }}</div>
+              <sc-if value="{{ wp.improved }}" hint-placeholder-val="{{ false }}"><div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#2f6b4f;background:#eaf1ec;padding:2px 7px;border-radius:6px;">↑ {{ wp.deltaLabel }}</div></sc-if>
+              <div style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:{{ wp.color }};font-weight:500;">{{ wp.pct }}%</div>
+              <sc-if value="{{ wp.canDrill }}" hint-placeholder-val="{{ true }}"><svg width="7" height="12" viewBox="0 0 8 14" style="flex-shrink:0;"><path d="M1 1l6 6-6 6" stroke="#c3c1b8" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></sc-if>
+            </div>
+            <div style="height:6px;border-radius:99px;background:#ece9e0;margin-top:9px;overflow:hidden;"><div style="height:100%;border-radius:99px;background:{{ wp.color }};width: {{ wp.pct }}%;"></div></div>
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;margin-top:8px;text-align:left;color:{{ wp.hintColor }};">{{ wp.hint }}</div>
+          </button>
+        </sc-for>
+      </div>
+
+      <div style="margin-top:18px;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:#8c8f85;padding-left:2px;">Most-missed topics</div>
+      <div style="margin-top:8px;display:flex;flex-wrap:wrap;gap:7px;">
+        <sc-for list="{{ errorChips }}" as="c" hint-placeholder-count="3">
+          <div style="background:#f7e9e4;border:1px solid #ecd2c8;border-radius:8px;padding:6px 11px;font-size:12.5px;font-weight:500;color:#9c3f2b;">{{ c }}</div>
+        </sc-for>
+      </div>
+
+      <div style="margin-top:20px;background:#1b1d1a;border-radius:18px;padding:18px;color:#fff;">
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:#9fb6a8;">Recommended next</div>
+        <div style="font-size:17px;font-weight:700;margin-top:7px;">{{ recoChapter }}</div>
+        <div style="font-size:13px;color:#c4c7bf;margin-top:3px;line-height:1.5;">{{ recoReason }}</div>
+        <button onClick="{{ continuePractice }}" style="margin-top:14px;width:100%;background:#fff;color:#1b1d1a;border:none;border-radius:12px;padding:14px;font:inherit;font-size:15px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;">
+          <span>{{ continueLabel }}</span>
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M5 12h14m-6-6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+      </div>
+    </div>
+    </sc-if>
+
+  </div>
+
+  <!-- ════════ BOTTOM NAV ════════ -->
+  <sc-if value="{{ showNav }}" hint-placeholder-val="{{ false }}">
+    <div style="position:absolute;left:0;right:0;bottom:0;z-index:30;padding:10px 24px 30px;background:#faf9f6;border-top:1px solid #ece9e0;display:flex;gap:8px;">
+      <div style="position:absolute;left:0;right:0;top:-22px;height:22px;background:linear-gradient(to top,#faf9f6,rgba(250,249,246,0));pointer-events:none;"></div>
+      <button onClick="{{ goHub }}" style="flex:1;background:none;border:none;cursor:pointer;font:inherit;display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px;color:{{ studyColor }};">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="14" height="14" rx="2.5" stroke="currentColor" stroke-width="1.8"/><path d="M7 4h12a2 2 0 012 2v11" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        <span style="font-size:11px;font-weight:600;">Study</span>
+      </button>
+      <button onClick="{{ goProgress }}" style="flex:1;background:none;border:none;cursor:pointer;font:inherit;display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px;color:{{ progressColor }};">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M5 19V11M12 19V5M19 19v-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        <span style="font-size:11px;font-weight:600;">Progress</span>
+      </button>
+    </div>
+  </sc-if>
+
+  <!-- ════════ BOTTOM SHEET ════════ -->
+  <sc-if value="{{ sheetOpen }}" hint-placeholder-val="{{ false }}">
+    <div onClick="{{ closeSheet }}" style="position:absolute;inset:0;z-index:40;background:rgba(27,29,26,.4);animation:scrimIn .2s ease;display:flex;flex-direction:column;justify-content:flex-end;backdrop-filter:blur(2px);">
+      <div onClick="{{ stop }}" style="background:#faf9f6;border-radius:24px 24px 0 0;padding:8px 20px 40px;animation:sheetUp .28s cubic-bezier(.2,.8,.2,1);max-height:82%;overflow-y:auto;box-shadow:0 -10px 40px rgba(0,0,0,.18);">
+        <div style="width:38px;height:5px;border-radius:99px;background:#dcdad1;margin:6px auto 16px;"></div>
+
+        <!-- PREVIEW sheet -->
+        <sc-if value="{{ isPreviewSheet }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;">
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:#2f6b4f;">Source preview</div>
+            <div style="flex:1;"></div>
+            <button onClick="{{ closeSheet }}" style="border:none;background:#ece9e0;border-radius:50%;width:28px;height:28px;cursor:pointer;color:#595c53;display:flex;align-items:center;justify-content:center;"><svg width="14" height="14" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg></button>
+          </div>
+          <div style="font-size:19px;font-weight:700;letter-spacing:-.01em;">{{ sourceName }}</div>
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#8c8f85;margin-top:4px;">{{ sourceMeta }}</div>
+          <div style="margin-top:16px;background:#fff;border:1px solid #e9e7df;border-radius:14px;padding:18px;">
+            <div style="font-family:'IBM Plex Serif',Georgia,serif;font-size:15px;line-height:1.7;color:#2a2c26;white-space:pre-wrap;">{{ previewText }}</div>
+          </div>
+          <button onClick="{{ closeSheet }}" style="margin-top:18px;width:100%;background:#1b1d1a;color:#fff;border:none;border-radius:13px;padding:14px;font:inherit;font-size:15px;font-weight:600;cursor:pointer;">Looks right</button>
+        </sc-if>
+
+        <!-- SOURCE sheet -->
+        <sc-if value="{{ isSourceSheet }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;">
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:#2f6b4f;">Source trace</div>
+            <div style="flex:1;"></div>
+            <button onClick="{{ closeSheet }}" style="border:none;background:#ece9e0;border-radius:50%;width:28px;height:28px;cursor:pointer;color:#595c53;display:flex;align-items:center;justify-content:center;"><svg width="14" height="14" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg></button>
+          </div>
+          <div style="font-size:19px;font-weight:700;letter-spacing:-.01em;">{{ sheetSource.docName }}</div>
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#8c8f85;margin-top:4px;">{{ sheetSource.locator }}</div>
+
+          <sc-if value="{{ sheetSource.hasPassage }}" hint-placeholder-val="{{ true }}">
+            <div style="margin-top:16px;background:#fff;border:1px solid #e9e7df;border-left:3px solid #2f6b4f;border-radius:4px 12px 12px 4px;padding:16px 16px 16px 18px;">
+              <div style="font-family:'IBM Plex Serif',Georgia,serif;font-size:16px;line-height:1.62;color:#2a2c26;">{{ sheetSource.passage }}</div>
+            </div>
+            <div style="margin-top:12px;display:flex;align-items:center;gap:8px;padding:11px 14px;background:#eaf1ec;border-radius:12px;">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 17v.01M12 13.5c0-2 3-2.2 3-4.5a3 3 0 10-6 0" stroke="#2f6b4f" stroke-width="1.8" stroke-linecap="round"/></svg>
+              <div style="font-size:12.5px;color:#3d5e4c;line-height:1.4;">This is the exact passage your question was generated from.</div>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ sheetSource.fallback }}" hint-placeholder-val="{{ false }}">
+            <div style="margin-top:16px;background:#f6eedd;border:1px solid #ecdfc2;border-radius:14px;padding:16px;display:flex;gap:12px;">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" style="flex-shrink:0;"><circle cx="12" cy="12" r="9.5" stroke="#9a6b1f" stroke-width="1.8"/><path d="M12 8v5m0 3h.01" stroke="#9a6b1f" stroke-width="2.2" stroke-linecap="round"/></svg>
+              <div style="font-size:14px;line-height:1.55;color:#7d5a1c;">{{ sheetSource.note }}</div>
+            </div>
+          </sc-if>
+
+          <button onClick="{{ closeSheet }}" style="margin-top:18px;width:100%;background:#1b1d1a;color:#fff;border:none;border-radius:13px;padding:14px;font:inherit;font-size:15px;font-weight:600;cursor:pointer;">Back to question</button>
+        </sc-if>
+
+        <!-- LANGUAGE sheet -->
+        <sc-if value="{{ isLangSheet }}" hint-placeholder-val="{{ false }}">
+          <div style="font-size:20px;font-weight:700;letter-spacing:-.01em;">Content language</div>
+          <div style="font-size:13.5px;line-height:1.5;color:#595c53;margin-top:4px;">Questions and explanations stay in this language to match your material. Detected automatically — change it any time.</div>
+          <div style="margin-top:16px;display:flex;flex-direction:column;gap:8px;">
+            <sc-for list="{{ langOptions }}" as="l" hint-placeholder-count="4">
+              <button onClick="{{ l.onClick }}" style="{{ l.style }}">
+                <div style="flex:1;text-align:left;font-size:15px;font-weight:600;">{{ l.name }}</div>
+                <sc-if value="{{ l.selected }}" hint-placeholder-val="{{ false }}"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="11" fill="#2f6b4f"/><path d="M7 12.5l3.2 3.2L17 9" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></sc-if>
+              </button>
+            </sc-for>
+          </div>
+        </sc-if>
+      </div>
+    </div>
+  </sc-if>
+
+</div>
+</x-import>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:&quot;402px&quot;,&quot;height&quot;:&quot;874px&quot;}}">
+class Component extends DCLogic {
+  state = { screen:'upload', uploadMode:null, pasteText:'', source:null, parseStep:0, lang:'English',
+    practiceBlock:null, queue:[], queuePos:0, selected:[], submitted:false,
+    roundCorrect:0, roundTotal:0, blockMastery:{}, sheet:null, tab:'study',
+    quizKind:'block', quizTitle:'', drillId:null, kpMastery:{}, drillResult:null };
+
+  fileSource = { kind:'file', name:'PMBOK-Guide-Ch4-7.pdf', meta:'4.2 MB · PDF', ext:'PDF' };
+
+  mockFileExcerpt = 'Chapter 4 — Project Integration Management\n\nProject Integration Management includes the processes and activities to identify, define, combine, unify, and coordinate the various processes and project management activities.\n\n4.1 Develop Project Charter\nThe process of developing a document that formally authorizes the existence of a project and provides the project manager with the authority to apply organizational resources to project activities…\n\n4.6 Perform Integrated Change Control\nThe process of reviewing all change requests; approving changes and managing changes to deliverables, organizational process assets, project documents, and the project management plan…';
+
+  parseSteps = [
+    'Reading & parsing your material',
+    'Detecting content language',
+    'Extracting key exam concepts',
+    'Splitting material into topics',
+    'Generating practice questions',
+  ];
+
+  langs = ['English','Spanish — Español','Mandarin — 中文','French — Français','German — Deutsch'];
+
+  // ── topics (coverage split into knowledge areas) ──
+  blocks = [
+    { id:'integration', name:'Integration Management', desc:'Project charter, change control, project plan', qIdx:[0,1,2] },
+    { id:'scope',       name:'Scope Management',       desc:'Requirements, WBS, scope baseline',          qIdx:[4]    },
+    { id:'cost',        name:'Cost Management',        desc:'Cost estimates, budget, cost baseline',      qIdx:[3,5]  },
+  ];
+
+  questions = [
+    {
+      type:'single', chapter:'Integration', kp:'4.6 · Perform Integrated Change Control', difficulty:'Medium',
+      stem:'A key stakeholder submits a change request to add a new feature while the project is in execution. What should the project manager do FIRST?',
+      options:[
+        { id:'a', text:'Implement the change to keep the stakeholder satisfied.' },
+        { id:'b', text:'Assess its impact and process it through Perform Integrated Change Control.' },
+        { id:'c', text:'Reject it because the scope baseline is already approved.' },
+        { id:'d', text:'Escalate the request to the sponsor for a decision.' },
+      ],
+      correct:['b'],
+      whyCorrect:'Every change request must be formally evaluated for its impact on scope, schedule, cost, quality, and risk before any action is taken. That assessment happens through Perform Integrated Change Control, where the change control board approves, defers, or rejects it.',
+      whyWrong:{
+        a:'Acting on the change without assessing impact bypasses change control and can break the baselines.',
+        c:'A baseline can change — but only through the formal process, never by refusing requests outright.',
+        d:'Escalation may follow, but the first step is always to assess impact through the defined process.',
+      },
+      sources:[
+        { label:'PMBOK Guide §4.6', docName:'PMBOK Guide — Integration', locator:'Section 4.6 · p.113', passage:'Perform Integrated Change Control is the process of reviewing all change requests; approving changes and managing changes to deliverables, organizational process assets, project documents, and the project management plan; and communicating the decisions.' },
+      ],
+      reviewTopics:['Change control board','Configuration management','Scope baseline'],
+    },
+    {
+      type:'multiple', chapter:'Integration', kp:'4.1 · Develop Project Charter', difficulty:'Easy',
+      stem:'Which of the following are outputs of the Develop Project Charter process? Select two.',
+      options:[
+        { id:'a', text:'Project charter' },
+        { id:'b', text:'Assumption log' },
+        { id:'c', text:'Project management plan' },
+        { id:'d', text:'Work breakdown structure (WBS)' },
+      ],
+      correct:['a','b'],
+      whyCorrect:'Develop Project Charter produces two outputs: the project charter and the assumption log. High-level assumptions and constraints identified while authorizing the project are first recorded in the assumption log.',
+      whyWrong:{
+        c:'The project management plan is an output of Develop Project Management Plan — a later planning process.',
+        d:'The WBS is created in Create WBS, part of scope management.',
+      },
+      sources:[
+        { label:'PMBOK Guide §4.1', docName:'PMBOK Guide — Integration', locator:'Section 4.1.3 · p.81', passage:'The outputs of the Develop Project Charter process are the project charter and the assumption log. The assumption log records all assumptions and constraints throughout the project life cycle.' },
+      ],
+      reviewTopics:['Develop Project Charter','Assumption log','Outputs vs. inputs'],
+    },
+    {
+      type:'truefalse', chapter:'Integration', kp:'4.1 · Develop Project Charter', difficulty:'Easy',
+      stem:'The project charter formally authorizes the project manager to apply organizational resources to project activities.',
+      options:[
+        { id:'t', text:'True' },
+        { id:'f', text:'False' },
+      ],
+      correct:['t'],
+      whyCorrect:'The project charter is the document that formally authorizes the existence of the project and grants the project manager the authority to apply organizational resources to project activities.',
+      whyWrong:{
+        f:'This statement is true — granting the PM that authority is precisely the purpose of the charter.',
+      },
+      sources:[
+        { fallback:true, label:'Combined understanding', docName:'Comprehensive understanding', locator:'Synthesis · Section 4.1',
+          note:'This item is based on combined understanding across the charter discussion in Section 4.1 — there is no single source passage to highlight for it.' },
+      ],
+      reviewTopics:['Project charter','PM authority'],
+    },
+    {
+      type:'single', chapter:'Cost', kp:'7.3 · Determine Budget', difficulty:'Medium',
+      stem:'During which process is the authorized cost baseline established?',
+      options:[
+        { id:'a', text:'Determine Budget' },
+        { id:'b', text:'Estimate Costs' },
+        { id:'c', text:'Control Costs' },
+        { id:'d', text:'Plan Cost Management' },
+      ],
+      correct:['a'],
+      whyCorrect:'Determine Budget aggregates the estimated costs of individual activities or work packages to establish an authorized cost baseline, which excludes management reserves.',
+      whyWrong:{
+        b:'Estimate Costs develops the individual cost estimates but does not aggregate them into a baseline.',
+        c:'Control Costs monitors performance against the baseline; it does not create it.',
+        d:'Plan Cost Management defines how costs will be managed, not the baseline itself.',
+      },
+      sources:[
+        { label:'PMBOK Guide §7.3', docName:'PMBOK Guide — Cost', locator:'Section 7.3 · p.248', passage:'Determine Budget is the process of aggregating the estimated costs of individual activities or work packages to establish an authorized cost baseline. This baseline includes all authorized budgets but excludes management reserves.' },
+      ],
+      reviewTopics:['Cost baseline','Determine Budget','Management reserves'],
+    },
+    {
+      type:'single', chapter:'Scope', kp:'5.4 · Create WBS', difficulty:'Easy',
+      stem:'What is the lowest level of the work breakdown structure (WBS) called?',
+      options:[
+        { id:'a', text:'Work package' },
+        { id:'b', text:'Activity' },
+        { id:'c', text:'Deliverable' },
+        { id:'d', text:'Control account' },
+      ],
+      correct:['a'],
+      whyCorrect:'The work package is the lowest level of the WBS. It is the point at which cost and duration can be reliably estimated and managed.',
+      whyWrong:{
+        b:'Activities come from decomposing work packages during schedule management — they are not a WBS level.',
+        c:'Deliverables sit at higher levels of the WBS and are decomposed further into work packages.',
+        d:'A control account is a management control point above the work-package level, not the lowest level.',
+      },
+      sources:[
+        { label:'PMBOK Guide §5.4', docName:'PMBOK Guide — Scope', locator:'Section 5.4 · p.157', passage:'Create WBS is the process of subdividing project deliverables and project work into smaller, more manageable components. The lowest level of the WBS is the work package, for which cost and duration can be estimated and managed.' },
+      ],
+      reviewTopics:['Work package','Decomposition','Control account'],
+    },
+    {
+      type:'truefalse', chapter:'Cost', kp:'7.3 · Determine Budget', difficulty:'Medium',
+      stem:'Management reserves are included in the project cost baseline.',
+      options:[
+        { id:'t', text:'True' },
+        { id:'f', text:'False' },
+      ],
+      correct:['f'],
+      whyCorrect:'Management reserves are NOT part of the cost baseline. They sit in the overall project budget, are set aside for unforeseen work within scope, and require management approval to use.',
+      whyWrong:{
+        t:'This is false — the cost baseline excludes management reserves; they belong to the broader project budget.',
+      },
+      sources:[
+        { label:'PMBOK Guide §7.3', docName:'PMBOK Guide — Cost', locator:'Section 7.3.3 · p.252', passage:'The cost baseline is the approved version of the time-phased project budget, excluding any management reserves. Management reserves are held outside the cost baseline for unforeseen work.' },
+      ],
+      reviewTopics:['Management reserves','Cost baseline','Project budget'],
+    },
+  ];
+
+  mistakes = [
+    { qIndex:0, chapter:'Integration', kp:'4.6 · Perform Integrated Change Control', stem:'A stakeholder submits a change request mid-execution. What should the PM do FIRST?', tag:'Missed 2×' },
+    { qIndex:3, chapter:'Cost', kp:'7.3 · Determine Budget', stem:'During which process is the authorized cost baseline established?', tag:'Missed 1×' },
+  ];
+
+  // weak knowledge points shown on Progress; those with a `drill` can be re-practiced with fresh questions
+  weakPointsData = [
+    { id:'change-control',   name:'Perform Integrated Change Control', base:38, drill:'change-control'   },
+    { id:'determine-budget', name:'Determine Budget',                  base:52, drill:'determine-budget' },
+    { id:'charter',          name:'Develop Project Charter',           base:74, drill:null               },
+  ];
+
+  // targeted re-practice: NEW, reworded questions on the same weak concept (not the originals)
+  drills = [
+    { weakId:'change-control', kpName:'Perform Integrated Change Control', questions:[
+      { type:'single', chapter:'Integration', kp:'4.6 · Integrated Change Control', difficulty:'Medium',
+        stem:'A developer notices a small bug and quietly fixes it beyond the agreed scope, believing it is harmless. From an integrated change control view, what was the mistake?',
+        options:[ {id:'a',text:'Nothing — trivial fixes do not need change control'},{id:'b',text:'They did not notify the customer afterward'},{id:'c',text:'They acted before the change was assessed and approved through the formal process'},{id:'d',text:'They should have escalated it to the sponsor first'} ],
+        correct:['c'],
+        whyCorrect:'Any change to project work — regardless of size — must be evaluated and approved through Perform Integrated Change Control before it is implemented. Acting first bypasses that control and can quietly break a baseline.',
+        whyWrong:{ a:'Even small, well-intentioned changes can affect the baselines and must be controlled.', b:'Notifying afterward does not fix the core issue: the change was never assessed or approved.', d:'Escalation is not the first step; the change must enter the formal change-control process.' },
+        sources:[ {label:'PMBOK Guide §4.6', docName:'PMBOK Guide — Integration', locator:'Section 4.6 · p.113', passage:'Perform Integrated Change Control is the process of reviewing all change requests and managing changes before they are implemented. No change is made to a baseline without an approved change request.'} ],
+        reviewTopics:['Change control board','Configuration management'] },
+      { type:'single', chapter:'Integration', kp:'4.6 · Integrated Change Control', difficulty:'Medium',
+        stem:'Who holds the authority to approve, defer, or reject a change request in Perform Integrated Change Control?',
+        options:[ {id:'a',text:'The project manager acting alone'},{id:'b',text:'The change control board (CCB)'},{id:'c',text:'Whoever submitted the request'},{id:'d',text:'The project sponsor only'} ],
+        correct:['b'],
+        whyCorrect:'Decisions on change requests are made by a formally chartered change control board (CCB), which reviews each request and records the approve, defer, or reject decision.',
+        whyWrong:{ a:'The PM facilitates the process but does not unilaterally approve changes.', c:'The requester cannot approve their own change.', d:'The sponsor may sit on the CCB, but approval is a board decision, not the sponsor acting alone.' },
+        sources:[ {label:'PMBOK Guide §4.6', docName:'PMBOK Guide — Integration', locator:'Section 4.6.2 · p.115', passage:'A change control board is a formally chartered group responsible for reviewing, evaluating, approving, deferring, or rejecting changes to the project, with decisions recorded.'} ],
+        reviewTopics:['Change control board','Roles & authority'] },
+      { type:'truefalse', chapter:'Integration', kp:'4.6 · Integrated Change Control', difficulty:'Easy',
+        stem:'Approved change requests can result in updates to the cost and schedule baselines.',
+        options:[ {id:'t',text:'True'},{id:'f',text:'False'} ],
+        correct:['t'],
+        whyCorrect:'Approved change requests are an output of integrated change control and can drive updates to the project management plan, including the cost and schedule baselines.',
+        whyWrong:{ f:'This is true — once a change is approved, the affected baselines are formally updated.' },
+        sources:[ {label:'PMBOK Guide §4.6', docName:'PMBOK Guide — Integration', locator:'Section 4.6.3 · p.120', passage:'Outputs of Perform Integrated Change Control include approved change requests and updates to the project management plan and its baselines.'} ],
+        reviewTopics:['Baselines','Approved changes'] },
+    ]},
+    { weakId:'determine-budget', kpName:'Determine Budget', questions:[
+      { type:'single', chapter:'Cost', kp:'7.3 · Determine Budget', difficulty:'Medium',
+        stem:'Which of the following is INCLUDED in the cost baseline?',
+        options:[ {id:'a',text:'Management reserves'},{id:'b',text:'Contingency reserves'},{id:'c',text:'Unapproved cost estimates'},{id:'d',text:'The expected profit margin'} ],
+        correct:['b'],
+        whyCorrect:'The cost baseline is the aggregated activity cost estimates plus contingency reserves. Management reserves are held outside the baseline.',
+        whyWrong:{ a:'Management reserves sit outside the cost baseline, in the overall budget.', c:'Only approved, aggregated estimates form the baseline.', d:'Profit margin is not part of a project cost baseline.' },
+        sources:[ {label:'PMBOK Guide §7.3', docName:'PMBOK Guide — Cost', locator:'Section 7.3.3 · p.254', passage:'The cost baseline includes the aggregated cost estimates and contingency reserves, but excludes management reserves.'} ],
+        reviewTopics:['Contingency vs management reserves','Cost baseline'] },
+      { type:'multiple', chapter:'Cost', kp:'7.3 · Determine Budget', difficulty:'Medium',
+        stem:'Which of these are inputs used to Determine Budget? Select two.',
+        options:[ {id:'a',text:'Cost estimates'},{id:'b',text:'Basis of estimates'},{id:'c',text:'The signed customer invoice'},{id:'d',text:'The final earned-value report'} ],
+        correct:['a','b'],
+        whyCorrect:'Determine Budget aggregates the activity cost estimates, supported by the basis of estimates, to build the cost baseline.',
+        whyWrong:{ c:'Invoices are actuals collected later — not an input to building the budget.', d:'Earned-value reporting happens during Control Costs, after the baseline exists.' },
+        sources:[ {label:'PMBOK Guide §7.3', docName:'PMBOK Guide — Cost', locator:'Section 7.3.1 · p.249', passage:'Inputs to Determine Budget include the cost estimates and the basis of estimates, along with the scope baseline and project schedule.'} ],
+        reviewTopics:['Determine Budget inputs','Basis of estimates'] },
+      { type:'single', chapter:'Cost', kp:'7.3 · Determine Budget', difficulty:'Easy',
+        stem:'How is the cost baseline most commonly displayed?',
+        options:[ {id:'a',text:'As an S-curve of cumulative cost over time'},{id:'b',text:'As a Gantt chart'},{id:'c',text:'As a Pareto chart'},{id:'d',text:'As a network diagram'} ],
+        correct:['a'],
+        whyCorrect:'The cost baseline is a time-phased budget, usually displayed as an S-curve of cumulative costs across the project timeline.',
+        whyWrong:{ b:'A Gantt chart shows scheduled activities, not the time-phased budget.', c:'A Pareto chart ranks causes of problems, unrelated to the budget.', d:'A network diagram shows activity dependencies.' },
+        sources:[ {label:'PMBOK Guide §7.3', docName:'PMBOK Guide — Cost', locator:'Section 7.3.3 · p.255', passage:'The cost baseline is a time-phased budget that is often displayed as an S-curve showing cumulative cost over time.'} ],
+        reviewTopics:['Time-phased budget','S-curve'] },
+    ]},
+  ];
+
+  setScrollRef = (el) => { this.scrollEl = el; };
+  _scrollTop(){ if(this.scrollEl) this.scrollEl.scrollTop = 0; }
+  _scrollBottom(){ setTimeout(()=>{ if(this.scrollEl) this.scrollEl.scrollTop = this.scrollEl.scrollHeight; }, 70); }
+  _eq(a,b){ if(a.length!==b.length) return false; const x=[...a].sort(), y=[...b].sort(); return x.every((v,i)=>v===y[i]); }
+
+  // ── upload
+  pickFile = () => { this.setState({ source:this.fileSource, uploadMode:null }); };
+  openPaste = () => { this.setState({ uploadMode:'paste' }); };
+  onPasteChange = (e) => { const val = e.target.value; this.setState({ pasteText: val }); };
+  cancelPaste = () => { this.setState({ uploadMode:null }); };
+  confirmPaste = () => {
+    const t = (this.state.pasteText||'').trim();
+    if(!t) return;
+    const words = t.split(/\s+/).length;
+    this.setState({ source:{ kind:'paste', name:'Pasted study text', meta: words+' words', ext:'TXT', text:t }, uploadMode:null });
+  };
+  removeSource = (e) => { if(e) e.stopPropagation(); this.setState({ source:null, pasteText:'', uploadMode:null }); };
+  openPreview = (e) => { if(e) e.stopPropagation(); this.setState({ sheet:{ kind:'preview' } }); };
+
+  analyze = () => {
+    if(!this.state.source) return;
+    this.setState({ screen:'parsing', parseStep:0 });
+    this.timers = [];
+    for(let i=1;i<=this.parseSteps.length;i++){
+      this.timers.push(setTimeout(()=>{ if(this.state.screen==='parsing') this.setState({ parseStep:i }); }, 760*i));
+    }
+    this.timers.push(setTimeout(()=>{ if(this.state.screen==='parsing'){ this.setState({ screen:'overview', tab:'study' }); this._scrollTop(); } }, 760*this.parseSteps.length + 600));
+  };
+  componentWillUnmount(){ (this.timers||[]).forEach(clearTimeout); }
+
+  // ── practice (block-scoped queue)
+  startBlock = (id) => {
+    const block = this.blocks.find(b=>b.id===id);
+    const queue = block ? block.qIdx.map(i=>this.questions[i]) : [this.questions[0]];
+    this.setState({ screen:'quiz', tab:'study', quizKind:'block', quizTitle:block?block.name:'Practice', practiceBlock:id, drillId:null, queue, queuePos:0, selected:[], submitted:false, roundCorrect:0, roundTotal:0, drillResult:null });
+    this._scrollTop();
+  };
+
+  startDrill = (weakId) => {
+    const drill = this.drills.find(d=>d.weakId===weakId);
+    if(!drill) return;
+    this.setState({ screen:'quiz', tab:'progress', quizKind:'drill', quizTitle:drill.kpName, drillId:weakId, practiceBlock:null, queue:[...drill.questions], queuePos:0, selected:[], submitted:false, roundCorrect:0, roundTotal:0, drillResult:null });
+    this._scrollTop();
+  };
+
+  _weakestDrillId(){
+    let best=null, bp=999;
+    this.weakPointsData.filter(w=>w.drill).forEach(w=>{ const p=this.state.kpMastery[w.id]!==undefined?this.state.kpMastery[w.id]:w.base; if(p<bp){ bp=p; best=w.id; } });
+    return best;
+  }
+
+  select = (id) => {
+    if(this.state.submitted) return;
+    const q = this.state.queue[this.state.queuePos];
+    this.setState(s => {
+      if(q.type==='multiple'){
+        return { selected: s.selected.includes(id) ? s.selected.filter(x=>x!==id) : [...s.selected, id] };
+      }
+      return { selected:[id] };
+    });
+  };
+
+  submit = () => {
+    if(this.state.selected.length===0 || this.state.submitted) return;
+    const q = this.state.queue[this.state.queuePos];
+    const isCorrect = this._eq(this.state.selected, q.correct);
+    this.setState(s=>({ submitted:true, roundCorrect: s.roundCorrect + (isCorrect?1:0), roundTotal: s.roundTotal+1 }));
+    this._scrollBottom();
+  };
+
+  next = () => {
+    const st = this.state;
+    const isLast = st.queuePos >= st.queue.length-1;
+    if(!isLast){
+      this.setState(s=>({ queuePos:s.queuePos+1, selected:[], submitted:false }));
+      this._scrollTop();
+      return;
+    }
+    const pct = st.roundTotal ? Math.round((st.roundCorrect/st.roundTotal)*100) : 0;
+    if(st.quizKind==='drill' && st.drillId){
+      // targeted weak-point re-practice → mastery rises, land on Progress with a result banner
+      const wp = this.weakPointsData.find(w=>w.id===st.drillId);
+      const from = st.kpMastery[st.drillId]!==undefined ? st.kpMastery[st.drillId] : (wp?wp.base:0);
+      const to = Math.min(95, Math.round(from*0.45 + pct*0.55));
+      this.setState({ screen:'progress', tab:'progress', kpMastery:{ ...st.kpMastery, [st.drillId]:to },
+        drillResult:{ weakId:st.drillId, name:wp?wp.name:'', from, to, pct }, selected:[], submitted:false });
+      this._scrollTop();
+    } else if(st.quizKind==='block' && st.practiceBlock){
+      this.setState({ screen:'overview', tab:'study', blockMastery:{ ...st.blockMastery, [st.practiceBlock]:pct }, selected:[], submitted:false, drillResult:null });
+      this._scrollTop();
+    } else {
+      this.setState({ screen:'overview', tab:'study', selected:[], submitted:false, drillResult:null });
+      this._scrollTop();
+    }
+  };
+
+  goHub = () => { this.setState({ screen:'overview', tab:'study', drillResult:null }); this._scrollTop(); };
+  goProgress = () => { this.setState({ screen:'progress', tab:'progress', drillResult:null }); this._scrollTop(); };
+  continuePractice = () => { const id=this._weakestDrillId(); if(id) this.startDrill(id); };
+
+  // ── mistakes
+  openMistakes = () => { this.setState({ screen:'mistakes', tab:'study', drillResult:null }); this._scrollTop(); };
+  redoMistake = (qIndex) => { this.setState({ screen:'quiz', tab:'study', quizKind:'mistake', quizTitle:'Mistake review', practiceBlock:null, drillId:null, queue:[this.questions[qIndex]], queuePos:0, selected:[], submitted:false, roundCorrect:0, roundTotal:0, drillResult:null }); this._scrollTop(); };
+
+  // ── sheets
+  openSource = (i) => { this.setState({ sheet:{ kind:'source', i } }); };
+  openLang = () => { this.setState({ sheet:{ kind:'lang' } }); };
+  closeSheet = () => { this.setState({ sheet:null }); };
+  pickLang = (name) => { this.setState({ lang:name, sheet:null }); };
+  stop = (e) => { if(e) e.stopPropagation(); };
+
+  _diffStyle(d){
+    const base='font-family:\'IBM Plex Mono\',monospace;font-size:10.5px;font-weight:500;padding:3px 9px;border-radius:7px;letter-spacing:.03em;';
+    if(d==='Easy')   return base+'background:#eaf1ec;color:#2f6b4f;';
+    if(d==='Medium') return base+'background:#f6eedd;color:#9a6b1f;';
+    return base+'background:#f7e9e4;color:#b0452f;';
+  }
+  _masteryColor(pct){ if(pct>=75) return '#2f6b4f'; if(pct>=50) return '#9a6b1f'; return '#b0452f'; }
+
+  renderVals(){
+    const st = this.state;
+    const v = {
+      isUpload: st.screen==='upload', isParsing: st.screen==='parsing', isOverview: st.screen==='overview',
+      isQuiz: st.screen==='quiz', isProgress: st.screen==='progress', isMistakes: st.screen==='mistakes',
+      showNav: ['overview','quiz','progress','mistakes'].includes(st.screen),
+      setScrollRef: this.setScrollRef,
+    };
+
+    // ── upload
+    const sd = st.source;
+    v.showPasteButton = st.uploadMode!=='paste' && !sd;
+    v.isPasting = st.uploadMode==='paste';
+    v.pasteText = st.pasteText;
+    v.onPasteChange = this.onPasteChange;
+    v.cancelPaste = this.cancelPaste;
+    v.confirmPaste = this.confirmPaste;
+    const pasteFilled = (st.pasteText||'').trim().length>0;
+    const pw = pasteFilled ? (st.pasteText.trim().split(/\s+/).length) : 0;
+    v.pasteCount = pasteFilled ? (pw+' words') : 'Nothing pasted yet';
+    v.confirmPasteStyle = 'border:none;border-radius:9px;padding:8px 14px;font:inherit;font-size:14px;font-weight:600;'+(pasteFilled?'background:#2f6b4f;color:#fff;cursor:pointer;':'background:#ece9e0;color:#b3b1a7;cursor:not-allowed;');
+    v.pickFile = this.pickFile; v.openPaste = this.openPaste;
+    v.hasSource = !!sd;
+    v.sourceName = sd ? sd.name : '';
+    v.sourceMeta = sd ? sd.meta : '';
+    v.sourceExt  = sd ? sd.ext : '';
+    v.removeSource = this.removeSource;
+    v.openPreview = this.openPreview;
+    v.previewText = sd ? (sd.kind==='paste' ? sd.text : this.mockFileExcerpt) : '';
+    v.analyze = this.analyze;
+    v.analyzeStyle = 'margin-top:16px;width:100%;border:none;border-radius:14px;padding:16px;font:inherit;font-size:16px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:8px;transition:all .2s;'+(sd
+      ? 'background:#2f6b4f;color:#fff;cursor:pointer;box-shadow:0 4px 14px rgba(47,107,79,.22);'
+      : 'background:#ece9e0;color:#b3b1a7;cursor:not-allowed;');
+
+    // ── parsing
+    v.parsePct = Math.min(100, Math.round((st.parseStep/this.parseSteps.length)*100));
+    v.parseRows = this.parseSteps.map((label,i)=>{
+      const isDone = i < st.parseStep, isActive = i === st.parseStep;
+      return {
+        label, isDone, isActive,
+        iconWrap:'width:26px;height:26px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;'+(isDone?'background:#2f6b4f;':isActive?'background:#fff;border:1px solid #cfe0d4;':'background:#fff;border:1.5px solid #e9e7df;'),
+        labelStyle:'font-size:15px;transition:all .3s;'+(isDone?'color:#1b1d1a;font-weight:500;':isActive?'color:#2f6b4f;font-weight:600;':'color:#bbb9ae;'),
+      };
+    });
+
+    // ── overview / study hub
+    v.docName = 'PMBOK Guide — Ch. 4–7 (Integration · Scope · Cost)';
+    v.examDirection = 'Project Management Professional (PMP)®';
+    v.lang = st.lang;
+    v.blockCount = this.blocks.length;
+    v.openLang = this.openLang;
+    v.topicBlocks = this.blocks.map(b=>{
+      const done = st.blockMastery[b.id] !== undefined;
+      const pct = done ? st.blockMastery[b.id] : 0;
+      const color = this._masteryColor(pct);
+      return {
+        name:b.name, desc:b.desc, count:b.qIdx.length, onClick:()=>this.startBlock(b.id),
+        barPct: done ? pct : 0, barColor: color,
+        pillLabel: done ? (pct+'%') : 'Not started',
+        pillStyle: 'font-family:\'IBM Plex Mono\',monospace;font-size:10.5px;font-weight:500;padding:3px 9px;border-radius:7px;'+(done?('color:'+color+';background:'+(pct>=75?'#eaf1ec':pct>=50?'#f6eedd':'#f7e9e4')+';'):'color:#a0a298;background:#f1efe8;'),
+      };
+    });
+    v.openMistakes = this.openMistakes;
+    v.mistakeCount = this.mistakes.length;
+    v.goHub = this.goHub;
+
+    // ── quiz
+    const q = st.queue.length ? st.queue[st.queuePos] : this.questions[0];
+    const correct = q.correct, selected = st.selected, submitted = st.submitted;
+    const isCorrect = submitted && this._eq(selected, correct);
+    const letters = { single:['A','B','C','D'], multiple:['A','B','C','D'], truefalse:['T','F'] };
+
+    v.isDrill = st.quizKind==='drill';
+    v.drillKp = st.quizTitle || '';
+    v.blockName = v.isDrill ? 'Weak-point drill' : (st.quizTitle || 'Practice');
+    v.qNumber = st.queuePos+1; v.qTotal = st.queue.length;
+    v.progressPct = Math.round(((st.queuePos + (submitted?1:0)) / Math.max(1,st.queue.length)) * 100);
+    v.chapter = q.chapter; v.kp = q.kp; v.difficulty = q.difficulty; v.difficultyStyle = this._diffStyle(q.difficulty);
+    v.typeLabel = q.type==='multiple' ? ('Multiple choice · select '+q.correct.length) : q.type==='truefalse' ? 'True / False' : 'Single choice';
+    v.stem = q.stem;
+    v.submitted = submitted;
+
+    v.options = q.options.map((o,i)=>{
+      const sel = selected.includes(o.id), corr = correct.includes(o.id);
+      let stt = 'default';
+      if(!submitted) stt = sel ? 'selected' : 'default';
+      else stt = corr ? 'correct' : (sel ? 'wrong' : 'muted');
+      const cardBase='display:flex;align-items:center;gap:12px;width:100%;text-align:left;padding:13px;border-radius:13px;cursor:pointer;font:inherit;transition:all .15s;border:1.5px solid ';
+      const cardMap={ default:'#e9e7df;background:#fff;', selected:'#2f6b4f;background:#eaf1ec;', correct:'#2f6b4f;background:#eaf1ec;', wrong:'#dcb6aa;background:#f7e9e4;', muted:'#eeece4;background:#fff;opacity:.6;' };
+      const badgeBase='width:26px;height:26px;border-radius:7px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;transition:all .15s;';
+      const badgeMap={ default:'background:#f1efe8;color:#7a7d72;', selected:'background:#2f6b4f;color:#fff;', correct:'background:#2f6b4f;color:#fff;', wrong:'background:#b0452f;color:#fff;', muted:'background:#f1efe8;color:#b3b1a7;' };
+      return {
+        id:o.id, text:o.text, badge:letters[q.type][i], onClick:()=>this.select(o.id),
+        cardStyle: cardBase+cardMap[stt], badgeStyle: badgeBase+badgeMap[stt],
+        isCheck: submitted && corr, isCross: submitted && sel && !corr,
+      };
+    });
+
+    const isLast = st.queuePos >= st.queue.length-1;
+    if(!submitted){
+      v.primaryAction = this.submit;
+      v.primaryActionLabel = selected.length>0 ? 'Submit answer' : 'Select an answer';
+      v.showActionArrow = false;
+      v.primaryActionStyle = 'width:100%;border:none;border-radius:14px;padding:16px;font:inherit;font-size:16px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:8px;transition:all .2s;'+(selected.length>0?'background:#2f6b4f;color:#fff;cursor:pointer;box-shadow:0 4px 14px rgba(47,107,79,.22);':'background:#ece9e0;color:#b3b1a7;cursor:not-allowed;');
+    } else {
+      v.primaryAction = this.next;
+      const finishLabel = v.isDrill ? 'Finish drill' : (st.quizKind==='mistake' ? 'Finish review' : 'Finish topic');
+      v.primaryActionLabel = isLast ? finishLabel : 'Next question';
+      v.showActionArrow = true;
+      v.primaryActionStyle = 'width:100%;border:none;border-radius:14px;padding:16px;font:inherit;font-size:16px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;'+(isLast?'background:#1b1d1a;color:#fff;':'background:#2f6b4f;color:#fff;box-shadow:0 4px 14px rgba(47,107,79,.22);');
+    }
+
+    // explanation
+    const wrongIds = selected.filter(id=>!correct.includes(id));
+    const missedIds = correct.filter(id=>!selected.includes(id));
+    const reasons = [];
+    wrongIds.forEach(id=>{ const o=q.options.find(x=>x.id===id); const bi=q.options.indexOf(o); if(q.whyWrong[id]) reasons.push({ badge:letters[q.type][bi], msg:q.whyWrong[id] }); });
+    missedIds.forEach(id=>{ const o=q.options.find(x=>x.id===id); const bi=q.options.indexOf(o); reasons.push({ badge:letters[q.type][bi], msg:'You missed this correct option — '+o.text }); });
+    const src0 = q.sources[0];
+    v.explain = {
+      isCorrect, isWrong:!isCorrect,
+      resultLabel: isCorrect ? 'Correct — well reasoned' : 'Not quite — let\'s break it down',
+      bannerStyle:'display:flex;align-items:center;gap:11px;padding:13px 15px;border-radius:14px;'+(isCorrect?'background:#eaf1ec;border:1px solid #cfe0d4;':'background:#f7e9e4;border:1px solid #ecd2c8;'),
+      bannerIconStyle:'width:26px;height:26px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;'+(isCorrect?'background:#2f6b4f;':'background:#b0452f;'),
+      whyCorrect: q.whyCorrect,
+      primaryCite: { show:true, label:src0.label, onClick:()=>this.openSource(0) },
+      showReasons: !isCorrect && reasons.length>0,
+      reasons,
+      sources: q.sources.map((s,i)=>({
+        label:s.label, locator:s.locator, fallback:!!s.fallback, hasPassage:!s.fallback, onClick:()=>this.openSource(i),
+        iconStyle:'width:30px;height:30px;border-radius:8px;flex-shrink:0;display:flex;align-items:center;justify-content:center;'+(s.fallback?'background:#f6eedd;':'background:#eaf1ec;'),
+      })),
+      reviewTopics: q.reviewTopics,
+    };
+
+    // ── mistakes
+    v.mistakeList = this.mistakes.map(m=>({
+      chapter:m.chapter, kp:m.kp, stem:m.stem, tag:m.tag, onClick:()=>this.redoMistake(m.qIndex),
+    }));
+
+    // ── progress (weak points are data-driven; mastery rises after a targeted drill)
+    const kpPct = (wp)=> st.kpMastery[wp.id]!==undefined ? st.kpMastery[wp.id] : wp.base;
+    const mastered = this.weakPointsData.map(kpPct);
+    v.masteryPct = Math.round(mastered.reduce((a,b)=>a+b,0)/mastered.length);
+    v.masteryLabel = v.masteryPct>=70 ? 'On track' : 'Getting there';
+    v.masterySummary = 'Tap a weak point below to get a fresh set of questions on it — reworded, not repeats.';
+    v.weakPoints = this.weakPointsData.map(wp=>{
+      const pct = kpPct(wp); const color = this._masteryColor(pct);
+      const canDrill = !!wp.drill;
+      const improved = st.drillResult && st.drillResult.weakId===wp.id;
+      return {
+        name:wp.name, pct, color, canDrill,
+        improved, deltaLabel: improved ? (st.drillResult.from+'→'+st.drillResult.to+'%') : '',
+        onClick: canDrill ? (()=>this.startDrill(wp.id)) : (()=>{}),
+        rowStyle:'width:100%;text-align:left;background:#fff;border:1px solid #e9e7df;border-radius:14px;padding:13px 14px;font:inherit;display:block;'+(canDrill?'cursor:pointer;':'cursor:default;'),
+        hint: canDrill ? 'Tap to re-practice with new questions →' : 'Solid — no drill needed',
+        hintColor: canDrill ? '#b0452f' : '#a0a298',
+      };
+    });
+    v.errorChips = ['Change control','Cost baseline','Outputs vs. inputs'];
+    // drill result banner
+    v.hasDrillResult = !!st.drillResult;
+    v.drillResultView = st.drillResult || { name:'', from:0, to:0 };
+    // recommended next → weakest drillable point, fresh questions
+    const weakestId = this._weakestDrillId();
+    const weakest = this.weakPointsData.find(w=>w.id===weakestId);
+    const weakestPct = weakest ? kpPct(weakest) : 0;
+    v.recoChapter = weakest ? weakest.name : 'All caught up';
+    v.recoReason = weakest ? ('A fresh set of questions on '+weakest.name+' — reworded, not repeats — to lift your weakest spot ('+weakestPct+'%).') : 'No weak points left to drill right now.';
+    v.continuePractice = this.continuePractice;
+    v.continueLabel = 'Practice with new questions';
+
+    // ── nav
+    v.goProgress = this.goProgress;
+    v.studyColor = st.tab==='study' ? '#2f6b4f' : '#a8aaa0';
+    v.progressColor = st.tab==='progress' ? '#2f6b4f' : '#a8aaa0';
+
+    // ── sheet
+    v.sheetOpen = !!st.sheet;
+    v.isPreviewSheet = st.sheet && st.sheet.kind==='preview';
+    v.isSourceSheet = st.sheet && st.sheet.kind==='source';
+    v.isLangSheet = st.sheet && st.sheet.kind==='lang';
+    if(v.isSourceSheet){
+      const s = q.sources[st.sheet.i] || src0;
+      v.sheetSource = { docName:s.docName, locator:s.locator, passage:s.passage||'', note:s.note||'', fallback:!!s.fallback, hasPassage:!s.fallback };
+    } else {
+      v.sheetSource = { docName:'', locator:'', passage:'', note:'', fallback:false, hasPassage:false };
+    }
+    v.langOptions = this.langs.map(name=>({
+      name, selected: st.lang===name, onClick:()=>this.pickLang(name),
+      style:'display:flex;align-items:center;gap:10px;padding:14px 15px;border-radius:13px;cursor:pointer;font:inherit;width:100%;transition:all .15s;border:1.5px solid '+(st.lang===name?'#2f6b4f':'#e9e7df')+';background:'+(st.lang===name?'#eaf1ec':'#fff')+';',
+    }));
+    v.closeSheet = this.closeSheet; v.stop = this.stop;
+
+    return v;
+  }
+}
+</script>
+</body>
+</html>
