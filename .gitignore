@@ -1,2 +1,3 @@
 # Editor / IDE config (local only)
 .vscode/
+.vercel
